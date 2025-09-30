@@ -1,0 +1,199 @@
+name: Static Site Monitor & HTML Report 🌐
+
+on:
+  schedule:
+    # Runs every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *' 
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  monitor_sites:
+    # This job will run in parallel for each item in the matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        url_config:
+          - url: 'https://www.contemporaryartdaily.com/'
+            name: 'contemporaryartdaily'
+          - url: 'https://altcomics.tumblr.com'
+            name: 'altcomics'
+          # Add more URLs here
+
+    name: Check ${{ matrix.url_config.name }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed for committing the hash/content files
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} 
+      
+      # --- Setup & File Naming ---
+      - name: Define environment variables and file names
+        id: vars
+        run: |
+          echo "SITE_URL=${{ matrix.url_config.url }}" >> $GITHUB_ENV
+          echo "SITE_NAME=${{ matrix.url_config.name }}" >> $GITHUB_ENV
+          
+          # Create unique file names based on the URL's hash
+          HASH_BASE=$(echo "${{ matrix.url_config.url }}" | sha1sum | awk '{ print $1 }')
+          echo "CONTENT_FILE_OLD=${HASH_BASE}-content-old.html" >> $GITHUB_ENV
+          echo "CONTENT_FILE_NEW=${HASH_BASE}-content-new.html" >> $GITHUB_ENV
+          echo "HASH_FILE=${HASH_BASE}-hash.txt" >> $GITHUB_ENV
+          
+          # FIX: Use 'tr' (translate) command in bash to replace spaces with hyphens.
+          # This avoids the pipe filter issue in the GitHub expression language.
+          CLEAN_NAME=$(echo "${{ matrix.url_config.name }}" | tr ' ' '-')
+          echo "REPORT_FILE=${CLEAN_NAME}_status.txt" >> $GITHUB_ENV
+
+      # --- Site Check & Diff ---
+      - name: Fetch and save current site content
+        id: fetch_content
+        run: |
+          curl -s -L ${{ env.SITE_URL }} > ${{ env.CONTENT_FILE_NEW }}
+          CURRENT_HASH=$(sha256sum ${{ env.CONTENT_FILE_NEW }} | awk '{ print $1 }')
+          echo "current_hash=$CURRENT_HASH" >> $GITHUB_OUTPUT
+          
+      - name: Read last known hash
+        id: last_hash
+        run: |
+          LAST_HASH=""
+          if [ -f ${{ env.HASH_FILE }} ]; then
+            LAST_HASH=$(cat ${{ env.HASH_FILE }})
+          fi
+          echo "last_hash=$LAST_HASH" >> $GITHUB_OUTPUT
+
+      - name: Calculate and log the difference
+        id: calculate_diff
+        # Only proceed if the hash is different or if the old content file exists (initial run)
+        if: steps.fetch_content.outputs.current_hash != steps.last_hash.outputs.last_hash || !steps.last_hash.outputs.last_hash
+        run: |
+          STATUS_MSG="✅ Change Detected" # Default to positive if run successfully
+          
+          if [ -f ${{ env.CONTENT_FILE_OLD }} ]; then
+            DIFF_OUTPUT=$(diff -u ${{ env.CONTENT_FILE_OLD }} ${{ env.CONTENT_FILE_NEW }})
+            
+            if [ -n "$DIFF_OUTPUT" ]; then
+              echo "::error::🚨 CHANGE DETECTED on ${{ env.SITE_NAME }} (${{ env.SITE_URL }})!"
+              echo "::group::Content Difference Log"
+              echo -e "--- DIFF START ---\n$DIFF_OUTPUT\n--- DIFF END ---"
+              echo "::endgroup::"
+              STATUS_MSG="🚨 CHANGED"
+            else
+              echo "Hash mismatch but diff is empty. Updating time baseline."
+              STATUS_MSG="🔄 Updated Time"
+            fi
+          else
+             echo "Initial run. Setting baseline."
+             STATUS_MSG="🆕 Initial Check"
+          fi
+          
+          # Pass the final status to be used in the artifact generation
+          echo "status_message=$STATUS_MSG" >> $GITHUB_OUTPUT
+          
+      - name: Update baseline and commit files
+        # Runs if a change was detected OR if this is the initial run
+        if: steps.fetch_content.outputs.current_hash != steps.last_hash.outputs.last_hash || !steps.last_hash.outputs.last_hash
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'Monitor: Updated baseline for ${{ env.SITE_NAME }}.'
+          # Update the baseline files for the next run
+          run: |
+            mv ${{ env.CONTENT_FILE_NEW }} ${{ env.CONTENT_FILE_OLD }}
+            echo "${{ steps.fetch_content.outputs.current_hash }}" > ${{ env.HASH_FILE }}
+          add: |
+            ${{ env.CONTENT_FILE_OLD }}
+            ${{ env.HASH_FILE }}
+
+      - name: Set Status for No Change
+        id: set_no_change_status
+        if: steps.fetch_content.outputs.current_hash == steps.last_hash.outputs.last_hash
+        run: |
+          echo "status_message=✅ No Change" >> $GITHUB_OUTPUT
+          echo "✅ No change detected on ${{ env.SITE_NAME }}."
+
+      # --- Artifact Upload ---
+      - name: Create and Upload Status Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-status-data
+          # Write the collected data line to the unique file
+          run: echo "${{ env.SITE_URL }}|${{ env.SITE_NAME }}|$(date -u +"%Y-%m-%d %H:%M:%S UTC")|${{ steps.calculate_diff.outputs.status_message || steps.set_no_change_status.outputs.status_message }}" > ${{ env.REPORT_FILE }}
+          path: ${{ env.REPORT_FILE }}
+
+  #====================================================
+  # JOB 2: Collects Artifacts and Generates the Report
+  #====================================================
+  generate_report:
+    needs: monitor_sites # Waits for ALL parallel checks to finish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Essential for committing the final index.html
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      # --- Artifact Download ---
+      - name: Download All Status Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: site-status-data
+          path: ./status-files # All status files are downloaded here
+
+      # --- HTML Generation ---
+      - name: Generate HTML Report Body
+        id: generate
+        run: |
+          REPORT_BODY=""
+          STATUS_DATA_DIR="./status-files"
+          
+          # Loop through all downloaded status files
+          for FILE in $STATUS_DATA_DIR/*_status.txt; do
+              if [ -f "$FILE" ]; then
+                  # Read the single line: URL|Name|Timestamp|Status
+                  LINE=$(cat "$FILE")
+                  IFS='|' read -r URL NAME LAST_CHANGE STATUS <<< "$LINE"
+                  
+                  # Build the HTML table row
+                  REPORT_BODY+="<tr>"
+                  REPORT_BODY+="<td><a href=\"$URL\">$NAME</a></td>"
+                  REPORT_BODY+="<td>$URL</td>"
+                  REPORT_BODY+="<td><strong>$STATUS</strong></td>"
+                  REPORT_BODY+="<td>$LAST_CHANGE</td>"
+                  REPORT_BODY+="</tr>"
+              fi
+          done
+          
+          # Output the generated HTML to a variable for the next step
+          REPORT_BODY="${REPORT_BODY//$'\n'/' '}" # Remove newlines to prevent parsing issues
+          echo "report_body=$REPORT_BODY" >> $GITHUB_OUTPUT
+
+      - name: Update index.html
+        run: |
+          # The marker where the HTML table should be injected
+          MARKER=""
+          
+          # 1. Read the existing index.html content
+          HTML_CONTENT=$(cat index.html)
+          
+          # 2. Define the new table structure
+          NEW_TABLE="<table border=\"1\"><thead><tr><th>Name</th><th>URL</th><th>Status</th><th>Last Check Time</th></tr></thead><tbody>${{ steps.generate.outputs.report_body }}</tbody></table>"
+          
+          # 3. Replace the marker in the HTML
+          # Note: Using shell parameter expansion for replacement
+          UPDATED_HTML="${HTML_CONTENT/$MARKER/$NEW_TABLE}"
+          
+          # 4. Overwrite the index.html file with the new content
+          echo "$UPDATED_HTML" > index.html
+
+      # --- Commit Report ---
+      - name: Commit and Push Report
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'Monitor: Auto-generated status report index.html on ${{ env.CURRENT_TIME }}'
+          add: 'index.html'
