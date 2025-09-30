@@ -98,14 +98,12 @@ jobs:
         if: steps.fetch_content.outputs.current_hash != steps.last_hash.outputs.last_hash || !steps.last_hash.outputs.last_hash
         uses: EndBug/add-and-commit@v9
         with:
-          message: 'Monitor: Updated baseline for ${{ env.SITE_NAME }}.'
-          # Update the baseline files for the next run
-          run: |
-            mv ${{ env.CONTENT_FILE_NEW }} ${{ env.CONTENT_FILE_OLD }}
-            echo "${{ steps.fetch_content.outputs.current_hash }}" > ${{ env.HASH_FILE }}
-          add: |
-            ${{ env.CONTENT_FILE_OLD }}
+          # Use 'add' to stage the files
+          add: | 
+            ${{ env.CONTENT_FILE_OLD }} 
             ${{ env.HASH_FILE }}
+          # Use 'message' for the commit message
+          message: 'Monitor: Updated baseline for ${{ env.SITE_NAME }}'
 
       - name: Set Status for No Change
         id: set_no_change_status
