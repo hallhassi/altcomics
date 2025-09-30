@@ -123,6 +123,7 @@ jobs:
         if: steps.fetch_content.outputs.current_hash != steps.last_hash.outputs.last_hash || !steps.last_hash.outputs.last_hash
         uses: EndBug/add-and-commit@v9
         with:
+          retry: 3 # Recommended default setting
           # CORRECT: use 'add' input to specify files to commit
           add: |
             ${{ env.CONTENT_FILE_OLD }}
