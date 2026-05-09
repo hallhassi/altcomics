@@ -1,0 +1,27 @@
+name: Sync Tumblr to Site
+on:
+  schedule:
+    - cron: '42 * * * *' # Runs every hour
+  workflow_dispatch: # Allows you to run it manually
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch RSS and Convert
+        uses: keiranlovett/rss-feed-to-markdown@main
+        with:
+          feed_url: 'https://altcomics.tumblr.com/rss'
+          template_file: './template.md' # A simple layout file you create
+          output_dir: './posts'
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'TumblrBot'
+          git config --global user.email 'bot@github.com'
+          git add .
+          git commit -m "Sync new Tumblr posts" || exit 0
+          git push
