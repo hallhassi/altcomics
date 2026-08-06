@@ -1,8 +1,8 @@
 ---
 title: "R H Quaytman"
-date: Sat, 01 Aug 2026 19:05:56 -0600
-link: "https://altcomics.tumblr.com/post/823795653710888960"
+date: Sat, 01 Aug 2026 19:26:31 -0600
+link: "https://altcomics.tumblr.com/post/823796948143374337"
 ---
-![](https://64.media.tumblr.com/b07ca7abb71d00e7289c514c19ae2a63/c1ef03b044de98aa-76/s640x960/760fd2c97f029bafe7df0d9199fba678085f7213.png)
+![](https://64.media.tumblr.com/06f20a3fe996997d5658829fdc30e153/6332b5716f577475-fb/s640x960/f0dd449bbbedb1d30bf896f90e341b1d096c5e6c.jpg)
 
 R. H. Quaytman
