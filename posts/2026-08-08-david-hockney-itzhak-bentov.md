@@ -7,6 +7,6 @@ link: "https://altcomics.tumblr.com/post/824401508388962304"
 
 ![](https://64.media.tumblr.com/09731cdaecf06cca05447d5809bc7a88/62e7c6d1eb55c155-84/s640x960/e881ef600c78194a2f51f02d104070040e00ba76.png)
 
-![](https://64.media.tumblr.com/43f992f071c1e4d0bd5ade60419e72f2/62e7c6d1eb55c155-e2/s640x960/b5f017b37181ff4ec0cddcb57a3885f538f5a598.png)
+![](https://64.media.tumblr.com/8a25d86bb46d16626eae20b4aafa88c7/62e7c6d1eb55c155-5b/s640x960/36868b24eec5ccd577ea64b12d8c073bebd58d02.png)
 
 David Hockney, Itzhak Bentov
