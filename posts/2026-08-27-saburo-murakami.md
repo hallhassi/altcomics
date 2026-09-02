@@ -1,8 +1,8 @@
 ---
 title: "Saburo Murakami"
-date: Wed, 26 Aug 2026 19:06:32 -0600
-link: "https://altcomics.tumblr.com/post/826060615299792896"
+date: Thu, 27 Aug 2026 07:04:39 -0600
+link: "https://altcomics.tumblr.com/post/826105794875604992"
 ---
-![](https://64.media.tumblr.com/05aae842786ff70c0a59660ddcd71882/704860b80cd4d539-82/s640x960/bd0e13b595c8cd77c0d47bd0ce6a9414d945c4d6.png)
+![](https://64.media.tumblr.com/62a39047bb0746f5b40c9fb4753944a5/e0c0a13a6dd194b6-a7/s640x960/e4cc1c6e6484906eb54df6913686cc84f24346d3.png)
 
 Saburo Murakami
