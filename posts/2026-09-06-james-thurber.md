@@ -1,8 +1,8 @@
 ---
 title: "James Thurber"
-date: Sat, 05 Sep 2026 19:06:31 -0600
-link: "https://altcomics.tumblr.com/post/826966584198299648"
+date: Sun, 06 Sep 2026 13:05:46 -0600
+link: "https://altcomics.tumblr.com/post/827034484506509312"
 ---
-![](https://64.media.tumblr.com/871cdcdd539fc150b2b24a3321902018/468fd5f89190469a-7f/s640x960/dd3284c5b317167b62040270744a09b9529ef16e.jpg)
+![](https://64.media.tumblr.com/dd08873122e887341ad59a0cd3f6a5db/b0047b7091d9d397-02/s640x960/7fd98fc5d6990e0b7af02abe7549cb82d498405c.jpg)
 
 James Thurber
