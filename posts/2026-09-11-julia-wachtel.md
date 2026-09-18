@@ -1,8 +1,8 @@
 ---
 title: "Julia Wachtel"
-date: Fri, 11 Sep 2026 07:04:17 -0600
-link: "https://altcomics.tumblr.com/post/827464726548201472"
+date: Fri, 11 Sep 2026 13:08:31 -0600
+link: "https://altcomics.tumblr.com/post/827487642544472065"
 ---
-![](https://64.media.tumblr.com/96b23da2f6cc39fb85e52583a06c60f7/2fb6bd248345b47e-3f/s640x960/26950c80cf6de1d874d5df640b11f00f15f64d84.jpg)
+![](https://64.media.tumblr.com/fbe8cdb097aafe9f470d947ce0766ad3/eb5f2a0f5bbc68b4-b1/s640x960/3d049e02546df0096e67f494def18bcd1f0866e6.jpg)
 
 Julia Wachtel
