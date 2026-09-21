@@ -1,10 +1,10 @@
 ---
 title: "davidhockney pistisq"
-date: Sun, 13 Sep 2026 19:05:31 -0600
-link: "https://altcomics.tumblr.com/post/827691296556826624"
+date: Mon, 14 Sep 2026 13:08:53 -0600
+link: "https://altcomics.tumblr.com/post/827759456575176704"
 ---
-![](https://64.media.tumblr.com/17de9ac5a92ca9f0fb42d48cefd167fe/e1bb34a1ad9a903d-c1/s640x960/60c079a81d189d8dad26dccb77e7dbc7dd5558c3.png)
+![](https://64.media.tumblr.com/9d3568b1ec017de28689a6fff8bf7409/62d4fcd12ffe76ed-8a/s640x960/73b75994c17ca09776f51559cb0562cdfbde7455.png)
 
-![](https://64.media.tumblr.com/29d1c997fe97a1a0857117db2c3d274f/e1bb34a1ad9a903d-b6/s640x960/034779f3a814ee8039d35f9e61b35eb9a88a30ca.png)
+![](https://64.media.tumblr.com/cb9a038a9726333125a897ef01c6675d/62d4fcd12ffe76ed-7b/s640x960/692123b569482d69c8008a46c5576b72bf2b5aaf.png)
 
 [@davidhockney](https://tmblr.co/M5LARlemtKRKN3Z0I9Paj3A), [@pistisq](https://tmblr.co/MwhYODulZENH1CnkDVPCjcA)
